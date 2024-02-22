@@ -1,0 +1,35 @@
+flip left and initialize to 1:
+FCN
+
+
+item #1:
+IU IU IU IU
+
+item #2:
+IU IU IU IU
+
+
+formatting inputted data by interweaving and add marker 0s:
++++S+S+S+S  I0
+----S+S+S   I0
+---S+S      I0
+--S 
+
+carry in: I0
+
+I0[D
+
+full adder*:
+C++C-NCC++S---N+N-N
+
+get other bit:
++S-
+
+full adder*:
+C++C-NCC++S---N+N-N
+
+or carry outs:
++NS
+
+
+B]FD (need to flip bc bug)
