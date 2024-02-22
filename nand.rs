@@ -2,36 +2,9 @@ use std::env;
 use std::fs;
 use std::fmt;
 use std::io::{self,Write};
-use std::time::{Instant,Duration};
-/*
-MEANINGS:
-+/- :
-    Move cursor forwards / backwards
-N:
-    Take the bit and the bit infront of the cursor and Nand them together.
-C:
-    Copy the bit currently selected and put it to the front of the cursor.
-S: 
-    Swap the bit and the bit in front of the cursor
-I[X]:
-    Insert a new bit at the position of the cursor.
-    Everything in front of the cursor will move in the direction faced to accomodate it.
-    options for X:
-        0: a literal 0
-        1: a literal 1
-        U: An input from the user
-        R: A random bit (based on the time elapsed its not the most random but oh well
-D:
-    Delete the current bit and move forward.
-B:
-    Skip the next instruciton if the bit under the cursor is a 1 right now.
-[ ]:
-    When the program pointer reaches ], go back to the previous [ (that is not already matched)
-    
-    ex: [  [ ]  ]  These go to these spots
-        |  +-+  |
-        +-------+   
-*/
+use std::time::Instant;
+
+
 enum LitType {
     Zero,
     One,
