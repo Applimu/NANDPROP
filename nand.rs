@@ -4,7 +4,6 @@ use std::fmt;
 use std::io::{self,Write};
 use std::time::Instant;
 
-
 enum LitType {
     Zero,
     One,
@@ -56,16 +55,16 @@ impl LitType {
     }
 }
 
-//  * = technically unnecessary, h = direction sensitive
+// h = direction sensitive
 enum Code {//   Symbol:
     Imovf, //h    +
-    Imovb, //*h   -
+    Imovb, //h    -
     Inand, //h    N
     Icopy, //h    C
-    Iswap, //*h   S
-    Ilite(LitType), //*h   I (0,1,R,U)
-    Idele, //*h   D
-    Icond, //     B
+    Iswap, //h    S
+    Ilite(LitType), //h   I (0,1,R,U)
+    Idele, //h    D
+    Ibran, //     B
     Iflip, //     F
     Ijump, //     ]
     Iloop, //     [
@@ -81,7 +80,7 @@ impl fmt::Display for Code {
             Code::Iswap =>  "SWAP",
             Code::Ilite(_) =>  "LITE",
             Code::Idele =>  "DELE",
-            Code::Icond =>  "COND",
+            Code::Ibran =>  "BRAN",
             Code::Iflip =>  "FLIP",
             Code::Ijump =>  "JUMP",
             Code::Iloop =>  "LOOP",
@@ -115,7 +114,7 @@ fn parse(s: &String) -> Vec<Code> {
             'S' => {prog.push(Code::Iswap);continue},
             'I' => (),
             'D' => {prog.push(Code::Idele);continue}
-            'B' => {prog.push(Code::Icond);continue},
+            'B' => {prog.push(Code::Ibran);continue},
             'F' => {prog.push(Code::Iflip);continue},
             ']' => {prog.push(Code::Ijump);continue},
             '[' => {prog.push(Code::Iloop);continue},
@@ -124,13 +123,13 @@ fn parse(s: &String) -> Vec<Code> {
         
         new_or_break!(cur_char,iterator);
 
-        match cur_char {
-            '0' => prog.push(Code::Ilite(LitType::Zero)),
-            '1' => prog.push(Code::Ilite(LitType::One)),
-            'R' => prog.push(Code::Ilite(LitType::Random)),
-            'U' => prog.push(Code::Ilite(LitType::User)),
+        prog.push(Code::Ilite(match cur_char {
+            '0' => LitType::Zero,
+            '1' => LitType::One,
+            'R' => LitType::Random,
+            'U' => LitType::User,
             _ => panic!("Syntax error!: 'I' should always be followed by what to insert (0 or 1)."),
-        }
+        }));
     }
     return prog;
 }
@@ -198,7 +197,7 @@ fn evaluate(prog:Vec<Code>, show:bool) -> String {
                 bit_arr.remove(arr_ptr);
                 if !dir {arr_ptr = short_dec!(arr_ptr)};
             },
-            Code::Icond => {if bit_arr[arr_ptr] {prog_ptr += 1}},
+            Code::Ibran => {if bit_arr[arr_ptr] {prog_ptr += 1}},
             Code::Iflip => {dir = !dir},
             Code::Ijump => {
                 let mut depth: u8 = 1;
@@ -231,7 +230,7 @@ fn main() {
 
     let program:Vec<Code> = parse(&contents);
     
-    print!("The length of program is {}!\nDisplay? (1 or 0):",program.len());
+    print!("This program is {} instuctions long!\nDisplay calculations?",program.len());
     io::stdout().flush().unwrap();
     println!("FINAL ANSWER: {}",evaluate(program,LitType::User.get(None)));
 }
