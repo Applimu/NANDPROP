@@ -1,15 +1,19 @@
 # PRON!
-PRON is a fun little esolang / computational model that I have created. It's vaguely based on [PROPs](https://ncatlab.org/nlab/show/PROP) in category theory.
+PRON is a fun little esolang / computational model that I have created. It's vaguely based on [PROPs](https://ncatlab.org/nlab/show/PROP) in category theory. 
 
 ## Compilation and Running this:
 Compile PRON.rs using rustc (nothing special). To use it, create your code in a .txt file (or really any file that can be read by Rust's `fs::read_to_string` function), and run PRON.exe with this file as the second argument.
 
 ## How it works:
 The model of state of this esolang is modeled after [PROPs](https://ncatlab.org/nlab/show/PROP) from category theory. In this case the object is the boolean domain $\{0,1\}$.
-Long story short, the state is just a bit array of arbitrary length. In order to interact with this model though, we have a cursor, which points to one of the . 
+Long story short, the state is just a bit array of arbitrary length. In order to interact with this model though, we have a cursor which points to exactly one of the bits, and allows us to interact with the state. We are able to compute any function because we have the ability to copy data and nand them together. In fact, the `S`,`D`,`I0`,`I1` are all technically redundant. This model is turing complete because of the [structured programming theorem](https://en.wikipedia.org/wiki/Structured_programming).
 
+## Commands:
+This is a comprehensive list of all commands and how they operate:
 ### `+`/`-` 
-Move cursor forwards / backwards <br>
+Move cursor one bit forward / backward
+### `F`
+Flip the direction that the cursor is pointing.
 ### `N`
 Take the bit and the bit infront of the cursor and nand them together. <br>
 ### `C`
