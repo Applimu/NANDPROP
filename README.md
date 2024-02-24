@@ -33,7 +33,7 @@ Delete the current bit and move forward.
 ### `B`
 Skip the next instruciton if the bit under the cursor is a 1 right now.
 ### `[ ]`
-When the program pointer reaches \], go back to the previous \[ that is not already matched. This allows for basic looping and turing completeness.
+When the program pointer reaches `]`, go back to the previous `[` that is not already matched. This allows for basic looping and turing completeness.
 ```
     [  [ ]  ]  These go to these spots
     |  +-+  |
