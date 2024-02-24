@@ -1,8 +1,8 @@
-# Nand!
-Nand is a fun little esolang / computational model that I have created. It's vaguely based on [PROPs](https://ncatlab.org/nlab/show/PROP) in category theory.
+# PRON!
+PRON is a fun little esolang / computational model that I have created. It's vaguely based on [PROPs](https://ncatlab.org/nlab/show/PROP) in category theory.
 
 ## Compilation and Running this:
-Compile nand.rs using rustc (nothing special). To use it, create your code in a .txt file (or really any file that can be read by Rust's `fs::read_to_string` function), and run nand.exe with this file as the second argument.
+Compile PRON.rs using rustc (nothing special). To use it, create your code in a .txt file (or really any file that can be read by Rust's `fs::read_to_string` function), and run PRON.exe with this file as the second argument.
 
 ## How it works:
 The model of state of this esolang is modeled after [PROPs](https://ncatlab.org/nlab/show/PROP) from category theory. In this case the object is the boolean domain $\{0,1\}$.
@@ -11,7 +11,7 @@ Long story short, the state is just a bit array of arbitrary length. In order to
 ### `+`/`-` 
 Move cursor forwards / backwards <br>
 ### `N`
-Take the bit and the bit infront of the cursor and Nand them together. <br>
+Take the bit and the bit infront of the cursor and nand them together. <br>
 ### `C`
 Copy the bit currently selected and put it to the front of the cursor.
 ### `S` 
