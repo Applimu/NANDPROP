@@ -88,50 +88,37 @@ impl fmt::Display for Code {
     }
 }
 
-
-macro_rules! new_or_break {
-    ($x:ident,$y:ident) => {
-        match $y.next() {
-            Some(c) => {$x = c},
-            None => break,
-        }
-    }
-}
-
 fn parse(s: &String) -> Vec<Code> { 
     let mut prog:Vec<Code> = Vec::new();
     let mut iterator = s.chars();
-    let mut cur_char: char;
 
-    loop {
-        new_or_break!(cur_char,iterator);
+    while let Some(cur_char) = iterator.next() {
 
-        match cur_char {
-            '+' => {prog.push(Code::Imovf);continue},
-            '-' => {prog.push(Code::Imovb);continue},
-            'N' => {prog.push(Code::Inand);continue},
-            'C' => {prog.push(Code::Icopy);continue},
-            'S' => {prog.push(Code::Iswap);continue},
-            'I' => (),
-            'D' => {prog.push(Code::Idele);continue}
-            'B' => {prog.push(Code::Ibran);continue},
-            'F' => {prog.push(Code::Iflip);continue},
-            ']' => {prog.push(Code::Ijump);continue},
-            '[' => {prog.push(Code::Iloop);continue},
+        prog.push(match cur_char {
+            '+' => Code::Imovf,
+            '-' => Code::Imovb,
+            'N' => Code::Inand,
+            'C' => Code::Icopy,
+            'S' => Code::Iswap,
+            'I' => {
+                let lit_type = match iterator.next() {
+                    Some('0') => LitType::Zero,
+                    Some('1') => LitType::One,
+                    Some('R') => LitType::Random,
+                    Some('U') => LitType::User,
+                    _ => panic!("Syntax error!: 'I' should always be followed by what to insert (0 or 1)."),
+                };
+                Code::Ilite(lit_type)
+            },
+            'D' => Code::Idele,
+            'B' => Code::Ibran,
+            'F' => Code::Iflip,
+            ']' => Code::Ijump,
+            '[' => Code::Iloop,
             _ => continue,
-        }
-        
-        new_or_break!(cur_char,iterator);
-
-        prog.push(Code::Ilite(match cur_char {
-            '0' => LitType::Zero,
-            '1' => LitType::One,
-            'R' => LitType::Random,
-            'U' => LitType::User,
-            _ => panic!("Syntax error!: 'I' should always be followed by what to insert (0 or 1)."),
-        }));
-    }
-    return prog;
+        })
+    };
+    prog
 }
 
 fn display_state(array: &Vec<bool>,arr_ptr:usize,dir:bool, prog_ptr:usize,code: &Code) {
