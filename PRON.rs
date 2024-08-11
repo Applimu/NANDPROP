@@ -12,7 +12,7 @@ enum LitType {
 }
 
 impl LitType {
-    fn get(&self,mbnow:Option<Instant>) -> bool {
+    fn get_literal(&self,mbnow:Option<Instant>) -> bool {
         match self {
             LitType::Zero => false,
             LitType::One  => true,
@@ -178,7 +178,7 @@ fn evaluate(prog:Vec<Code>, show:bool) -> String {
             },
             Code::Ilite(val) => {
                 if !dir {arr_ptr += 1};
-                bit_arr.insert(arr_ptr,val.get(Some(now)));
+                bit_arr.insert(arr_ptr,val.get_literal(Some(now)));
             },
             Code::Idele => {
                 bit_arr.remove(arr_ptr);
@@ -189,7 +189,7 @@ fn evaluate(prog:Vec<Code>, show:bool) -> String {
             Code::Ijump => {
                 let mut depth: u8 = 1;
                 while depth != 0 {
-                    prog_ptr = prog_ptr.checked_sub(1).expect("Error!: Attempted to jump to before the program started!");
+                    prog_ptr = prog_ptr.checked_sub(1).expect("Error!: Unmatched closing bracket!");
                     match &prog[prog_ptr] {
                         Code::Ijump => {depth += 1},
                         Code::Iloop => {depth -= 1},
@@ -202,7 +202,7 @@ fn evaluate(prog:Vec<Code>, show:bool) -> String {
         prog_ptr += 1;
     }
     return bit_arr.iter()
-                  .map(|v:&bool|->char {if *v {'1'} else {'0'}})
+                  .map(|v| {if *v {'1'} else {'0'}})
                   .collect::<String>();
 }
 
@@ -217,7 +217,7 @@ fn main() {
 
     let program:Vec<Code> = parse(&contents);
     
-    print!("This program is {} instuctions long!\nDisplay calculations?",program.len());
+    print!("This program is {} instuctions long!\nDisplay calculations? (0 or 1):",program.len());
     io::stdout().flush().unwrap();
-    println!("FINAL ANSWER: {}",evaluate(program,LitType::User.get(None)));
+    println!("FINAL ANSWER: {}",evaluate(program,LitType::User.get_literal(None)));
 }
