@@ -67,22 +67,22 @@ enum Code {//  Symbol:
     Idele, //            D
     Ibran, //            B
     Ijump, //            ]
-    Iloop, //            [
+    Iopen, //            [
 }
 
 impl fmt::Display for Code {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{}", match self {
-            Code::Imovf =>  "MOVF",
-            Code::Imovb =>  "MOVB",
+            Code::Imovf =>  "MOVE FOREWARD",
+            Code::Imovb =>  "MOVE BACKWARD",
             Code::Inand =>  "NAND",
             Code::Icopy =>  "COPY",
             Code::Iswap =>  "SWAP",
-            Code::Ilite(_) =>  "LITE",
-            Code::Idele =>  "DELE",
-            Code::Ibran =>  "BRAN",
-            Code::Ijump =>  "JUMP",
-            Code::Iloop =>  "LOOP",
+            Code::Ilite(_) =>  "LITERAL",
+            Code::Idele =>  "DELETE",
+            Code::Ibran =>  "BRANCH",
+            Code::Ijump =>  "CONTINUE LOOP",
+            Code::Iopen =>  "START LOOP",
         })
     }
 }
@@ -112,7 +112,7 @@ fn parse(s: &String) -> Vec<Code> {
             'D' => Code::Idele,
             'B' => Code::Ibran,
             ']' => Code::Ijump,
-            '[' => Code::Iloop,
+            '[' => Code::Iopen,
             _ => continue,
         };
         prog.push(next_point)
@@ -158,12 +158,12 @@ fn evaluate(prog:Vec<Code>, show:bool) -> (Vec<bool>, usize) {
                     prog_ptr = prog_ptr.checked_sub(1).expect("Error!: Unmatched closing bracket!");
                     match &prog[prog_ptr] {
                         Code::Ijump => {depth += 1},
-                        Code::Iloop => {depth -= 1},
+                        Code::Iopen => {depth -= 1},
                         _ => (),
                     }
                 }
             },
-            Code::Iloop => (),
+            Code::Iopen => (),
 
             // 1 arg instructions
             Code::Icopy => {
