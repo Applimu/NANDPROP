@@ -69,7 +69,7 @@ impl Code {
 impl fmt::Display for Code {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{}", match self {
-            Code::Imovf =>  "MOVE FOREWARD",
+            Code::Imovf =>  "MOVE FORWARD",
             Code::Imovb =>  "MOVE BACKWARD",
             Code::Inand =>  "NAND",
             Code::Icopy =>  "COPY",
@@ -192,6 +192,7 @@ fn evaluate(prog:Vec<Code>, show:bool) -> (Vec<bool>, usize) {
 
 fn main() {
     let commargs: Vec<String> = env::args().collect();
+    dbg!(&commargs);
     let file = &commargs[1];
 
     println!("Looking for file {file}!");
@@ -203,8 +204,11 @@ fn main() {
     
     print!("This program is {} instuctions long!\nDisplay calculations? (0 or 1)",program.len());
     let show_calculations = LitType::User.get_literal();
+
+    let before = Instant::now();
     let (fin_arr, fin_ptr) = evaluate(program, show_calculations);
 
     println!("\n\nFinal");
-    display_state(&fin_arr, fin_ptr)
+    display_state(&fin_arr, fin_ptr);
+    //println!("Completed in {} microseconds", before.elapsed().as_micros())
 }

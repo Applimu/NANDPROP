@@ -1,18 +1,15 @@
 
+input first number:
+IU I1 ++ IU I0 ++ IU I0 ++ IU I0 ++
 
-input first number
-IU I0 IU I0 IU I0 IU
+append carry in at the end:
+I0 +
 
-marker for end of numbers: I1
+then go back to the start:
+-- -- -- --
 
-move back to lsb, and add carry in
-++++++++ I0
-
-input second number
-IU-- IU-- IU-- IU--
-
-move to end
-++++++++++++
+get input for the second number:
+IU +++ IU +++ IU +++ IU ++
 
 loop starting from the lsb. computes a full addition and breaks when
 it reaches the end marker
