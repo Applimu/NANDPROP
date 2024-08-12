@@ -141,16 +141,22 @@ fn evaluate(prog:Vec<Code>, show:bool) -> (Vec<bool>, usize) {
     while prog_ptr < prog.len() {
         let instr = &prog[prog_ptr];
         if show {
-            display_state(&bit_arr, arr_ptr);
             println!("Now performing: {}! (Instruction #{})\n", instr, prog_ptr);
         };
 
         match instr {
             // 0 arg instructions
-            Code::Imovf => {arr_ptr = arr_ptr + 1},
-            Code::Imovb => {arr_ptr = arr_ptr.checked_sub(1).expect("Error!: The bit array pointer is out of bounds!")},
+            Code::Imovf => {
+                arr_ptr = arr_ptr + 1;
+                if show {display_state(&bit_arr, arr_ptr)};
+            },
+            Code::Imovb => {
+                arr_ptr = arr_ptr.checked_sub(1).expect("Error!: The bit array pointer is out of bounds!");
+                if show {display_state(&bit_arr, arr_ptr)};
+            },
             Code::Ilite(val) => {
                 bit_arr.insert(arr_ptr,val.get_literal(Some(now)));
+                if show {display_state(&bit_arr, arr_ptr)};
             },
             Code::Ijump => {
                 let mut depth: u8 = 1;
@@ -169,18 +175,24 @@ fn evaluate(prog:Vec<Code>, show:bool) -> (Vec<bool>, usize) {
             Code::Icopy => {
                 let a = bit_arr[arr_ptr];
                 bit_arr.insert(arr_ptr, a);
+                if show {display_state(&bit_arr, arr_ptr)};
             },
             Code::Ibran => {if bit_arr[arr_ptr] {prog_ptr += 1}},
-            Code::Idele => {bit_arr.remove(arr_ptr);},
+            Code::Idele => {
+                bit_arr.remove(arr_ptr);
+                if show {display_state(&bit_arr, arr_ptr)};
+            },
 
             // 2 arg instructions
             Code::Inand => { // could maybe be done in just two calls to the list
                 let a = bit_arr.remove(arr_ptr);
                 let b = bit_arr.remove(arr_ptr);
                 bit_arr.insert(arr_ptr, !(a & b));
+                if show {display_state(&bit_arr, arr_ptr)};
             },
             Code::Iswap => { // NEEDS TO CATCH OOB ERROR
-                bit_arr.swap(arr_ptr,arr_ptr + 1)
+                bit_arr.swap(arr_ptr,arr_ptr + 1);
+                if show {display_state(&bit_arr, arr_ptr)};
             },
         }
         prog_ptr += 1;
@@ -200,8 +212,8 @@ fn main() {
     let program:Vec<Code> = parse(&contents);
     
     print!("This program is {} instuctions long!\nDisplay calculations? (0 or 1)",program.len());
-    io::stdout().flush().unwrap();
-    let (fin_arr, fin_ptr) = evaluate(program,LitType::User.get_literal(None));
+    let show_calculations = LitType::User.get_literal(None);
+    let (fin_arr, fin_ptr) = evaluate(program, show_calculations);
     println!("\n\nFinal");
     display_state(&fin_arr, fin_ptr)
 }
