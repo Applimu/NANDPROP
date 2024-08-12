@@ -42,7 +42,8 @@ enum Code {//  Symbol:
     Inand, //            N
     Icopy, //            C
     Iswap, //            S
-    Ilite(LitType), //   I (0,1,R,U)
+    Ilite(LitType), //   I (0,1,U)
+    Iemit, //            E
     Idele, //            D
     Ibran, //            B
     Ijump, //            ]
@@ -58,6 +59,7 @@ impl Code {
             Code::Icopy =>  true,
             Code::Iswap =>  true,
             Code::Ilite(_) =>  true,
+            Code::Iemit =>  false,
             Code::Idele =>  true,
             Code::Ibran =>  false,
             Code::Ijump =>  false,
@@ -75,6 +77,7 @@ impl fmt::Display for Code {
             Code::Icopy =>  "COPY",
             Code::Iswap =>  "SWAP",
             Code::Ilite(_) =>  "LITERAL",
+            Code::Iemit =>  "EMIT",
             Code::Idele =>  "DELETE",
             Code::Ibran =>  "BRANCH",
             Code::Ijump =>  "CONTINUE LOOP",
@@ -104,6 +107,7 @@ fn parse(s: &String) -> Vec<Code> {
                 };
                 Code::Ilite(lit_type)
             },
+            'E' => Code::Iemit,
             'D' => Code::Idele,
             'B' => Code::Ibran,
             ']' => Code::Ijump,
@@ -170,6 +174,9 @@ fn evaluate(prog:Vec<Code>, show:bool) -> (Vec<bool>, usize) {
             Code::Ibran => {if bit_arr[arr_ptr] {prog_ptr += 1}},
             Code::Idele => {
                 bit_arr.remove(arr_ptr);
+            },
+            Code::Iemit => {
+                print!("{}", if bit_arr[arr_ptr] {'1'} else {'0'})
             },
 
             // 2 arg instructions
