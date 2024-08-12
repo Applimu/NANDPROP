@@ -49,6 +49,23 @@ enum Code {//  Symbol:
     Iopen, //            [
 }
 
+impl Code {
+    fn changes_arr(&self) -> bool {
+        match self {
+            Code::Imovf =>  true,
+            Code::Imovb =>  true,
+            Code::Inand =>  true,
+            Code::Icopy =>  true,
+            Code::Iswap =>  true,
+            Code::Ilite(_) =>  true,
+            Code::Idele =>  true,
+            Code::Ibran =>  false,
+            Code::Ijump =>  false,
+            Code::Iopen =>  false,
+        }
+    }
+}
+
 impl fmt::Display for Code {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{}", match self {
@@ -125,15 +142,12 @@ fn evaluate(prog:Vec<Code>, show:bool) -> (Vec<bool>, usize) {
             // 0 arg instructions
             Code::Imovf => {
                 arr_ptr = arr_ptr + 1;
-                if show {display_state(&bit_arr, arr_ptr)};
             },
             Code::Imovb => {
                 arr_ptr = arr_ptr.checked_sub(1).expect("Error!: The bit array pointer is out of bounds!");
-                if show {display_state(&bit_arr, arr_ptr)};
             },
             Code::Ilite(val) => {
                 bit_arr.insert(arr_ptr,val.get_literal());
-                if show {display_state(&bit_arr, arr_ptr)};
             },
             Code::Ijump => {
                 let mut depth: u8 = 1;
@@ -152,26 +166,25 @@ fn evaluate(prog:Vec<Code>, show:bool) -> (Vec<bool>, usize) {
             Code::Icopy => {
                 let a = bit_arr[arr_ptr];
                 bit_arr.insert(arr_ptr, a);
-                if show {display_state(&bit_arr, arr_ptr)};
             },
             Code::Ibran => {if bit_arr[arr_ptr] {prog_ptr += 1}},
             Code::Idele => {
                 bit_arr.remove(arr_ptr);
-                if show {display_state(&bit_arr, arr_ptr)};
             },
 
             // 2 arg instructions
-            Code::Inand => { // could maybe be done in just two calls to the list
+            Code::Inand => {
                 let a = bit_arr.remove(arr_ptr);
-                let b = bit_arr.remove(arr_ptr);
-                bit_arr.insert(arr_ptr, !(a & b));
-                if show {display_state(&bit_arr, arr_ptr)};
+                let b = bit_arr.get_mut(arr_ptr).unwrap();
+                *b = !(a & *b);
             },
             Code::Iswap => {
                 bit_arr.swap(arr_ptr,arr_ptr + 1);
-                if show {display_state(&bit_arr, arr_ptr)};
             },
         }
+        if instr.changes_arr() & show {
+            display_state(&bit_arr, arr_ptr)
+        };
         prog_ptr += 1;
     }
     (bit_arr, arr_ptr)
@@ -191,6 +204,7 @@ fn main() {
     print!("This program is {} instuctions long!\nDisplay calculations? (0 or 1)",program.len());
     let show_calculations = LitType::User.get_literal();
     let (fin_arr, fin_ptr) = evaluate(program, show_calculations);
+
     println!("\n\nFinal");
     display_state(&fin_arr, fin_ptr)
 }
