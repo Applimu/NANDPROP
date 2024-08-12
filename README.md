@@ -27,9 +27,9 @@ The character `I` must be immediately followed by one of the following: <br>
     &emsp;`U`: An input from the user <br>
     &emsp;`R`: A random bit (based on the time elapsed, which is not very random but idk how to do crates right now so it will do) <br>
 ### `D`
-Delete the current bit and move forward.
+Delete the bit currently pointed at. everything to the right will move over to accomodate, which means the data pointer will now be pointing at the data that was to the right of the current one.
 ### `B`
-Skip the next instruciton if the bit under the cursor is a 1 right now.
+Skip the next instruction if the bit under the cursor is a 1 right now.
 ### `[ ]`
 When the program reaches `]`, go back to the previous `[` that is not already matched. This allows for basic looping and turing completeness.
 ```
