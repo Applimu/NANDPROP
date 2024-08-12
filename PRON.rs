@@ -38,16 +38,17 @@ impl LitType {
                 }
             },
             LitType::User => {
+                let mut stdout = io::stdout();
                 print!(": ");
-                io::stdout().flush().unwrap();
+                stdout.flush().unwrap();
                 for uline in io::stdin().lines() {
-                    match uline.unwrap().trim() {
+                    match uline.unwrap().as_str() {
                         "0" => return false,
                         "1" => return true,
                         _ => {}
                     }
                     print!("Input must be either 0 or 1!\n: ");
-                    io::stdout().flush().unwrap();
+                    stdout.flush().unwrap();
                 }
                 panic!("Please dont input null characters. Its very mean.")
             },
