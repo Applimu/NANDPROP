@@ -1,8 +1,8 @@
-# PRON!
-PRON is a fun little esolang / computational model that I have created. It's vaguely based on [PROPs](https://ncatlab.org/nlab/show/PROP) in category theory. 
+# NANDPROP!
+NANDPROP is a fun little esolang / computational model that I have created. It's vaguely based on [PROPs](https://ncatlab.org/nlab/show/PROP) in category theory. 
 
-## How to use PRON:
-Compile using `rustc PRON.rs`. To use it, create your code in a file (any file that can be read by Rust's `fs::read_to_string` function), and run PRON.exe with this file as the second argument.
+## How to use NANDPROP:
+Compile using `rustc NANDPROP.rs`. To use it, create your code in a file (any file that can be read by Rust's `fs::read_to_string` function), and then run `NANDPROP.exe [path of file]`.
 
 ## How it works:
 The model of state of this esolang is modeled after [PROPs](https://ncatlab.org/nlab/show/PROP) from category theory. In this case the object is the boolean domain $\{0,1\}$.
