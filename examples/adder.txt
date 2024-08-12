@@ -1,35 +1,28 @@
-flip left and initialize to 1:
-FCN
 
 
-item #1:
-IU IU IU IU
+input first number
+IU I0 IU I0 IU I0 IU
 
-item #2:
-IU IU IU IU
+marker for end of numbers: I1 +
 
 
-formatting inputted data by interweaving and add marker 0s:
-+++S+S+S+S  I0
-----S+S+S   I0
----S+S      I0
---S 
+input second number
+IU+ ++IU+ ++IU+ ++IU+
 
-carry in: I0
+carry in:
+I0+
 
+loop starting from the lsb. computes a full addition and breaks when
+it reaches the end marker
 I0[D
 
-full adder*:
-C++C-NCC++S---N+N-N
+half-adder: C++C-NCC-S+N+N-N-      this puts !carry below the output
 
-get other bit:
-+S-
+move to next two bits: +
 
-full adder*:
-C++C-NCC++S---N+N-N
+half-adder: C++C-NCC-S+N+N-N-
 
-or carry outs:
-+NS
+bit or the two `!carry`s together: -N
 
-
-B]FD (need to flip bc bug)
+-
+B]D
