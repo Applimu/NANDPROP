@@ -8,35 +8,14 @@ use std::time::Instant;
 enum LitType {
     Zero,
     One,
-    Random,
     User,
 }
 
 impl LitType {
-    fn get_literal(&self,mbnow:Option<Instant>) -> bool {
+    fn get_literal(&self) -> bool {
         match self {
             LitType::Zero => false,
             LitType::One  => true,
-            LitType::Random => {
-                match mbnow {
-                    Some (inst) => {
-                        match inst.elapsed().as_micros() % 10 {
-                            0 => false,
-                            1 => true,
-                            2 => false,
-                            3 => true,
-                            4 => true,
-                            5 => false,
-                            6 => false,
-                            7 => true,
-                            8 => false,
-                            9 => true,
-                            _ => panic!("Somehow the time elapsed is not an integer")
-                        }
-                    },
-                    None => panic!(),
-                }
-            },
             LitType::User => {
                 let mut stdout = io::stdout();
                 print!(": ");
@@ -103,9 +82,8 @@ fn parse(s: &String) -> Vec<Code> {
                 let lit_type = match iterator.next() {
                     Some('0') => LitType::Zero,
                     Some('1') => LitType::One,
-                    Some('R') => LitType::Random,
                     Some('U') => LitType::User,
-                    _ => panic!("Syntax error!: 'I' should always be followed by what to insert (0, 1, R, or U)."),
+                    _ => panic!("Syntax error!: 'I' should always be followed by what to insert (0, 1, or U)."),
                 };
                 Code::Ilite(lit_type)
             },
@@ -134,7 +112,6 @@ fn display_state(array: &Vec<bool>,arr_ptr:usize) {
 fn evaluate(prog:Vec<Code>, show:bool) -> (Vec<bool>, usize) {
     let mut bit_arr: Vec<bool> = Vec::new(); // true = 1, false = 0 btw
     let mut arr_ptr = 0usize;
-    let now = Instant::now();
 
     let mut prog_ptr = 0usize;
 
@@ -155,7 +132,7 @@ fn evaluate(prog:Vec<Code>, show:bool) -> (Vec<bool>, usize) {
                 if show {display_state(&bit_arr, arr_ptr)};
             },
             Code::Ilite(val) => {
-                bit_arr.insert(arr_ptr,val.get_literal(Some(now)));
+                bit_arr.insert(arr_ptr,val.get_literal());
                 if show {display_state(&bit_arr, arr_ptr)};
             },
             Code::Ijump => {
@@ -190,7 +167,7 @@ fn evaluate(prog:Vec<Code>, show:bool) -> (Vec<bool>, usize) {
                 bit_arr.insert(arr_ptr, !(a & b));
                 if show {display_state(&bit_arr, arr_ptr)};
             },
-            Code::Iswap => { // NEEDS TO CATCH OOB ERROR
+            Code::Iswap => {
                 bit_arr.swap(arr_ptr,arr_ptr + 1);
                 if show {display_state(&bit_arr, arr_ptr)};
             },
@@ -212,7 +189,7 @@ fn main() {
     let program:Vec<Code> = parse(&contents);
     
     print!("This program is {} instuctions long!\nDisplay calculations? (0 or 1)",program.len());
-    let show_calculations = LitType::User.get_literal(None);
+    let show_calculations = LitType::User.get_literal();
     let (fin_arr, fin_ptr) = evaluate(program, show_calculations);
     println!("\n\nFinal");
     display_state(&fin_arr, fin_ptr)
