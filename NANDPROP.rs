@@ -4,6 +4,44 @@ use std::fmt;
 use std::io::{self,Write};
 use std::time::Instant;
 
+/*
+Things to add:
+
+stuff to add for configuration:
+ -  Whether to display computations (the `show` variable rn)
+ -  changing which files to write to
+ -  whether it prompts the user (": ") and with what prompt
+ -  whether to emit and accept '0's and '1's or whether to accept ascii input as bits
+ -  whether to display a final state, and how much time it took
+
+Along with the configuration, Better command-line iterface
+ -  changing configuration in the command line
+
+better error handling:
+ -  What type of error occured:
+     -  OOB left/right error
+     -  IO error
+ -  the line and column this error occured in
+ -  turning the return type of `evaluate` into a Result<_,_>
+ -  Nice lil error messages explaining it all
+ -  (idk how this would work at All): maybe a hint/help system?
+     -  notify if u put a - between words
+     -  notify if u put an uppercase character in a word
+
+Maybe add more literal types?
+ -  add back the Random
+ -  ascii character (puts all 8 bits)
+ -  maybe even Utf-8 character lmao
+ -  maybe bit array literals (iffy on this because repeated I0 and I1s already do this)
+
+Debugging features:
+ -  breakpoints?
+ -  possibly the ability to turn on and off displaying the state
+ -  display state command
+
+*/
+
+
 #[derive(Debug, Copy, Clone)]
 enum LitType {
     Zero,
@@ -44,6 +82,7 @@ enum Code {//  Symbol:
     Iswap, //            S
     Ilite(LitType), //   I (0,1,U)
     Iemit, //            E
+    //Iline, //            L
     Idele, //            D
     Ibran, //            B
     Ijump, //            ]
@@ -60,6 +99,7 @@ impl Code {
             Code::Iswap =>  true,
             Code::Ilite(_) =>  true,
             Code::Iemit =>  false,
+            //Code::Iline =>  false,
             Code::Idele =>  true,
             Code::Ibran =>  false,
             Code::Ijump =>  false,
@@ -78,6 +118,7 @@ impl fmt::Display for Code {
             Code::Iswap =>  "SWAP",
             Code::Ilite(_) =>  "LITERAL",
             Code::Iemit =>  "EMIT",
+            //Code::Iline =>  "NEW LINE",
             Code::Idele =>  "DELETE",
             Code::Ibran =>  "BRANCH",
             Code::Ijump =>  "CONTINUE LOOP",
@@ -108,6 +149,7 @@ fn parse(s: &String) -> Vec<Code> {
                 Code::Ilite(lit_type)
             },
             'E' => Code::Iemit,
+            //'L' => Code::Iline,
             'D' => Code::Idele,
             'B' => Code::Ibran,
             ']' => Code::Ijump,
@@ -136,6 +178,7 @@ fn evaluate(prog:Vec<Code>, show:bool) -> (Vec<bool>, usize) {
 
     let mut prog_ptr = 0usize;
 
+    let mut output_state: Option<bool> = None;
     while prog_ptr < prog.len() {
         let instr = &prog[prog_ptr];
         if show {
@@ -176,8 +219,32 @@ fn evaluate(prog:Vec<Code>, show:bool) -> (Vec<bool>, usize) {
                 bit_arr.remove(arr_ptr);
             },
             Code::Iemit => {
-                print!("{}", if bit_arr[arr_ptr] {'1'} else {'0'})
+                /*
+                what different emittings show:
+                00 => '0'
+                11 => '1'
+                10 => '\n'
+                01 => ' '
+                */
+                let next_out = bit_arr[arr_ptr];
+                if !show {
+                    match output_state {
+                        None => {
+                            // sets the output_state for the next time a bit is emitted
+                            output_state = Some(next_out)
+                        },
+                        Some(false) => {
+                            print!("{}", if next_out {' '} else {'0'});
+                            output_state = None
+                        },
+                        Some(true) => {
+                            print!("{}", if next_out {'1'} else {'\n'});
+                            output_state = None
+                        }
+                    }
+                }
             },
+            //Code::Iline => println!(""),
 
             // 2 arg instructions
             Code::Inand => {
